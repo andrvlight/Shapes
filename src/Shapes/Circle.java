@@ -1,0 +1,24 @@
+package Shapes;
+
+import Shapes.Point.Point;
+
+public class Circle extends Shape {
+    private double radius;
+
+    public Circle(Point center, double radius) throws IllegalArgumentException {
+        if (radius <= 0) throw new IllegalArgumentException("radius must be > 0");
+        super(center);
+        this.radius = radius;
+    }
+
+    @Override
+    public boolean contains(Point point) {
+        double distanceX = point.getX() - center.getX();
+        double distanceY = point.getY() - center.getY();
+        return distanceX * distanceX + distanceY * distanceY <= radius * radius;
+    }
+
+    public double getRadius() {return radius;}
+
+    public void setRadius(double radius) {this.radius = radius;}
+}
