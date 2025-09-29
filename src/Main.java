@@ -2,11 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import Shapes.*;
 import Shapes.Point.*;
@@ -71,11 +67,31 @@ public class Main {
         int containsCount = 0;
 
         Scanner input = new Scanner(System.in);
-        System.out.print("Enter coordinate X: ");
-        double x = input.nextDouble();
-        System.out.print("Enter coordinate Y: ");
-        double y = input.nextDouble();
+
+        double x = 0;
+        try {
+            System.out.print("Enter coordinate X: ");
+            x = input.nextDouble();
+        } catch (InputMismatchException e) {
+            System.out.println("Error: Invalid input");
+        }
+
+        if (x > 50 || x < -50)
+            throw new IllegalArgumentException("Invalid input: x should be between -50 and 50");
+
+        double y = 0;
+        try {
+            System.out.print("Enter coordinate Y: ");
+            y = input.nextDouble();
+        } catch (InputMismatchException e) {
+            System.out.println("Error: Invalid input");
+        }
+
+        if (y > 50 || y < -50)
+            throw new IllegalArgumentException("Invalid input: y should be between -50 and 50");
+
         Point point = new Point(x, y);
+
 
         System.out.print("Pls enter how many shapes you would like to check: ");
         int numberOfShapes = input.nextInt();
