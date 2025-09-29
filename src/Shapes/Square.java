@@ -20,4 +20,8 @@ public class Square extends Shape {
                point.getY() >= center.getY() - halfSideLength &&
                point.getY() <= center.getY() + halfSideLength;
     }
+
+    public double getSideLength() {return sideLength;}
+
+    public void setSideLength(double sideLength) {this.sideLength = sideLength;}
 }
