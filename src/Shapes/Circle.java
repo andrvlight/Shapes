@@ -18,7 +18,8 @@ public class Circle extends Shape {
         return distanceX * distanceX + distanceY * distanceY <= radius * radius;
     }
 
-    public double getRadius() {return radius;}
+    @Override
+    public double getSize() {return radius;}
 
     public void setRadius(double radius) {this.radius = radius;}
 }

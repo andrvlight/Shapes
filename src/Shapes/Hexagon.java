@@ -42,7 +42,8 @@ public class Hexagon extends Shape {
         return pointA.getX() * pointB.getY() - pointA.getY() * pointB.getX();
     }
 
-    public double getSideLength() {return sideLength;}
+    @Override
+    public double getSize() {return sideLength;}
 
     public void setSideLength(double sideLength) {this.sideLength = sideLength;}
 }

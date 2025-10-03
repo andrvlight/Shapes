@@ -14,4 +14,6 @@ public abstract class Shape {
     public Point getCenter() {return center;}
 
     public void setCenter(Point center) {this.center = center;}
+
+    public abstract double getSize();
 }
