@@ -44,9 +44,9 @@ public class Main {
 
             for (int i = 0; i < n; i++) {
                 String shapeType = shapesList.get((int)(Math.random() * 4));
-                double x = (int) (Math.random() * 100 - 50);
-                double y = (int) (Math.random() * 100 - 50);
-                double size = (int) (Math.random() * 15 + 1);
+                double x = (int) (Math.random() * 20 - 10);
+                double y = (int) (Math.random() * 20 - 10);
+                double size = (int) (Math.random() * 5 + 1);
 
                 fw.write(shapeType + " " + x + " " + y + " " + size + "\n");
             }
@@ -54,6 +54,19 @@ public class Main {
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());
         }
+    }
+
+    private static String getResult(Map.Entry<String, Shape> entry, Point point) {
+        String result = entry.getKey()+ " with center (" + entry.getValue().getCenter().getX() + ", " + entry.getValue().getCenter().getY() + ")";
+        String tempPoint = " contains the point (" + point.getX() + ", " + point.getY() + ")";
+        String[] temp = entry.getKey().split(" ");
+        String type = temp[0];
+
+        if (Objects.equals(type, "Circle"))
+            result = result + " and radius: " + entry.getValue().getSize() + tempPoint;
+        else
+            result = result + " and side length: " + entry.getValue().getSize() + tempPoint;
+        return result;
     }
 
     public static void main(String[] args) {
@@ -73,30 +86,39 @@ public class Main {
             System.out.print("Enter coordinate X: ");
             x = input.nextDouble();
         } catch (InputMismatchException e) {
-            System.out.println("Error: Invalid input");
+            throw new InputMismatchException("Invalid Input");
         }
 
-        if (x > 50 || x < -50)
-            throw new IllegalArgumentException("Invalid input: x should be between -50 and 50");
+        if (x > 10 || x < -10)
+            throw new IllegalArgumentException("Invalid input: x should be between -10 and 10");
 
         double y = 0;
         try {
             System.out.print("Enter coordinate Y: ");
             y = input.nextDouble();
         } catch (InputMismatchException e) {
-            System.out.println("Error: Invalid input");
+            throw new InputMismatchException("Invalid Input");
         }
 
-        if (y > 50 || y < -50)
-            throw new IllegalArgumentException("Invalid input: y should be between -50 and 50");
+        if (y > 10 || y < -10)
+            throw new IllegalArgumentException("Invalid input: y should be between -10 and 10");
 
         Point point = new Point(x, y);
 
+        int numberOfShapes = 0;
+        try {
+            System.out.print("Pls enter how many shapes you would like to check between(any number form 1 to 100): ");
+            numberOfShapes = input.nextInt();
+        } catch (InputMismatchException e) {
+            throw new InputMismatchException("Invalid input");
+        }
 
-        System.out.print("Pls enter how many shapes you would like to check: ");
-        int numberOfShapes = input.nextInt();
+        if (numberOfShapes < 1 || numberOfShapes > 100)
+            throw new IllegalArgumentException("Invalid Input: number should be between 1 and 100");
 
+        printLineFunction();
         createFile();
+        printLineFunction();
         fillFileWithShapes(numberOfShapes);
 
         try (Scanner scanner = new Scanner(shapes)) {
@@ -153,13 +175,19 @@ public class Main {
         for (Map.Entry<String, Shape> entry : shapesList.entrySet()) {
             if (entry.getValue().contains(point)) {
                 containsCount++;
-                System.out.println(entry.getKey() + " contains the point (" + point.getX() + ", " + point.getY() + ")");
+                String result = getResult(entry, point);
+
+                System.out.println(result);
             }
         }
 
-        printLineFunction();
-        System.out.println("Total shapes containing the point: " + containsCount);
+        if(containsCount == 0)
+            System.out.println("No such shapes that contains this point");
+        else {
+            System.out.println("Total shapes containing the point: " + containsCount);
+        }
 
         printLineFunction();
     }
+
 }
