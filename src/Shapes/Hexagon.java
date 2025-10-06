@@ -6,8 +6,8 @@ public class Hexagon extends Shape {
     private double sideLength;
 
     public Hexagon(Point center, double sideLength) throws IllegalArgumentException {
-        if (sideLength <= 0) throw new IllegalArgumentException("sideLength must be > 0");
         super(center);
+        if (sideLength <= 0) throw new IllegalArgumentException("sideLength must be > 0");
         this.sideLength = sideLength;
     }
 

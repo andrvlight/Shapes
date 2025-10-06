@@ -1,193 +1,215 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
-import Shapes.*;
 import Shapes.Point.*;
+import Shapes.*;
 
 public class Main {
-    public static void printLineFunction() {
-        System.out.println();
-        String line = "";
-
-        for (int i = 0; i < 100; i++)
-            line = line + "-";
-
-        System.out.println(line);
-        System.out.println();
+    private static void printLine() {
+        System.out.println("-".repeat(100));
     }
 
-    public static void createFile() {
-        try {
-            File file = new File("shapes.txt");
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-            } else {
-                System.out.println("File already exists: " + file.getName());
+    private static double getValidatedCoordinate(Scanner input, String coordinate) {
+        while (true) {
+            try {
+                printLine();
+                System.out.print("Enter coordinate " + coordinate + " between -10 and 10: ");
+                double value = input.nextDouble();
+
+                if (value < 0 || value > 10) {
+                    printLine();
+                    System.out.println("Coordinates should be between -10 and 10, try again");
+                    continue;
+                }
+
+                return value;
+            } catch (InputMismatchException e) {
+                printLine();
+                System.out.println("Pleases enter a DOUBLE. Try again");
+                input.next();
             }
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
         }
     }
 
-    public static void fillFileWithShapes(int n) {
-        ArrayList<String> shapesList = new ArrayList<>();
-        shapesList.add("C");
-        shapesList.add("S");
-        shapesList.add("T");
-        shapesList.add("H");
+    private static int getValidatedNumberOfShapes(Scanner input) {
+        while (true) {
+            try {
+                printLine();
+                System.out.print("Enter number of shapes between 1 and 50: ");
+                int value = input.nextInt();
+
+                if (value < 1 || value > 50) {
+                    printLine();
+                    System.out.println("Number should be between 1 and 50, try again");
+                    continue;
+                }
+
+                return value;
+            } catch (InputMismatchException e) {
+                printLine();
+                System.out.println("Pleases enter an INTEGER. Try again");
+                input.next();
+            }
+        }
+    }
+
+    private static void createFile() {
+        try {
+            File file = new File("shapes.txt");
+            if (file.createNewFile()) {
+                printLine();
+                System.out.println("File created: " + file.getName());
+            } else {
+                printLine();
+                System.out.println("File already exists: " + file.getName());
+            }
+        } catch (IOException e) {
+            printLine();
+            System.out.println("Error while creating file: " + e.getMessage());
+        }
+    }
+
+    private static void fillFileWithShapes(int numberOfShapes) {
+        ArrayList<String> shapes = new ArrayList<>();
+        shapes.add("C");
+        shapes.add("S");
+        shapes.add("H");
+        shapes.add("T");
 
         try (FileWriter fw = new FileWriter("shapes.txt")) {
-            fw.write(n + "\n");
+            fw.write(numberOfShapes + "\n");
 
-            for (int i = 0; i < n; i++) {
-                String shapeType = shapesList.get((int)(Math.random() * 4));
-                double x = (int) (Math.random() * 20 - 10);
-                double y = (int) (Math.random() * 20 - 10);
-                double size = (int) (Math.random() * 5 + 1);
+            for (int i = 0; i < numberOfShapes; i++) {
+                String shapeType = shapes.get((int) (Math.random() * shapes.size()));
+                double x = (int) (Math.random() * 22 - 11);
+                double y = (int) (Math.random() * 22 - 11);
+                int size = (int) (Math.random() * 5 + 1);
 
                 fw.write(shapeType + " " + x + " " + y + " " + size + "\n");
             }
-            System.out.println("Successfully wrote " + n + " shapes to the file.");
+
+            printLine();
+            System.out.println("Shapes filled successfully");
         } catch (IOException e) {
-            System.out.println("An error occurred: " + e.getMessage());
+            printLine();
+            System.out.println("Error while filling file: " + e.getMessage());
         }
     }
 
     private static String getResult(Map.Entry<String, Shape> entry, Point point) {
-        String result = entry.getKey()+ " with center (" + entry.getValue().getCenter().getX() + ", " + entry.getValue().getCenter().getY() + ")";
-        String tempPoint = " contains the point (" + point.getX() + ", " + point.getY() + ")";
         String[] temp = entry.getKey().split(" ");
         String type = temp[0];
+        Shape shape = entry.getValue();
 
-        if (Objects.equals(type, "Circle"))
-            result = result + " and radius: " + entry.getValue().getSize() + tempPoint;
-        else
-            result = result + " and side length: " + entry.getValue().getSize() + tempPoint;
-        return result;
+        String result = (entry.getKey() + " with center (" + shape.getCenter().getX() + ", " + shape.getCenter().getY()) + ")";
+        String pointInfo = (" contains the point(" + point.getX() + ", " + point.getY()) + ")";
+
+        if (type.equals("Circle")) {
+            result += (" and radius: " + shape.getSize());
+        } else {
+            result += (" and side length: " + shape.getSize());
+        }
+
+        return result + pointInfo;
     }
 
-    public static void main(String[] args) {
-        File shapes = new File("shapes.txt");
-        Map<String, Shape> shapesList = new LinkedHashMap<>();
-
+    public static Map<String, Shape> loadShapesFromFile() {
         int circleCount = 0;
         int squareCount = 0;
         int triangleCount = 0;
         int hexagonCount = 0;
-        int containsCount = 0;
+        Map<String, Shape> shapes = new LinkedHashMap<>();
 
-        Scanner input = new Scanner(System.in);
-
-        double x = 0;
-        try {
-            System.out.print("Enter coordinate X: ");
-            x = input.nextDouble();
-        } catch (InputMismatchException e) {
-            throw new InputMismatchException("Invalid Input");
-        }
-
-        if (x > 10 || x < -10)
-            throw new IllegalArgumentException("Invalid input: x should be between -10 and 10");
-
-        double y = 0;
-        try {
-            System.out.print("Enter coordinate Y: ");
-            y = input.nextDouble();
-        } catch (InputMismatchException e) {
-            throw new InputMismatchException("Invalid Input");
-        }
-
-        if (y > 10 || y < -10)
-            throw new IllegalArgumentException("Invalid input: y should be between -10 and 10");
-
-        Point point = new Point(x, y);
-
-        int numberOfShapes = 0;
-        try {
-            System.out.print("Pls enter how many shapes you would like to check between(any number form 1 to 100): ");
-            numberOfShapes = input.nextInt();
-        } catch (InputMismatchException e) {
-            throw new InputMismatchException("Invalid input");
-        }
-
-        if (numberOfShapes < 1 || numberOfShapes > 100)
-            throw new IllegalArgumentException("Invalid Input: number should be between 1 and 100");
-
-        printLineFunction();
-        createFile();
-        printLineFunction();
-        fillFileWithShapes(numberOfShapes);
-
-        try (Scanner scanner = new Scanner(shapes)) {
-            numberOfShapes = Integer.parseInt(scanner.nextLine());
-            int tempNum = numberOfShapes;
-            while (scanner.hasNextLine() && tempNum > 0) {
+        try(Scanner scanner = new Scanner(new File("shapes.txt"))) {
+            scanner.nextLine();
+            while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                String[] temp = line.split(" ");
-                String shapeType =  temp[0];
-                double coordinateX = Double.parseDouble(temp[1]);
-                double coordinateY = Double.parseDouble(temp[2]);
-                double sideLengthOrRadius = Double.parseDouble(temp[3]);
-                tempNum--;
+                String[] temp  = line.split(" ");
+                String type = temp[0];
+                double x = Double.parseDouble(temp[1]);
+                double y = Double.parseDouble(temp[2]);
+                double size = Double.parseDouble(temp[3]);
 
-                switch (shapeType) {
+                switch (type) {
                     case "C":
                         circleCount++;
-                        Circle circle = new Circle(new Point(coordinateX, coordinateY), sideLengthOrRadius);
-                        shapesList.put("Circle ID:" + circleCount, circle);
+                        Circle circle = new Circle(new Point(x, y), size);
+                        shapes.put("Circle ID:" + circleCount, circle);
                         break;
 
                     case "S":
                         squareCount++;
-                        Square square = new Square(new Point(coordinateX, coordinateY), sideLengthOrRadius);
-                        shapesList.put("Square ID:" + squareCount, square);
+                        Square square = new Square(new Point(x, y), size);
+                        shapes.put("Square ID:" + squareCount, square);
                         break;
 
                     case "T":
                         triangleCount++;
-                        Triangle triangle = new Triangle(new Point(coordinateX, coordinateY), sideLengthOrRadius);
-                        shapesList.put("Triangle ID:" + triangleCount, triangle);
+                        Triangle triangle = new Triangle(new Point(x, y), size);
+                        shapes.put("Triangle ID:" + triangleCount, triangle);
                         break;
 
                     case "H":
                         hexagonCount++;
-                        Hexagon hexagon = new Hexagon(new Point(coordinateX, coordinateY), sideLengthOrRadius);
-                        shapesList.put("Hexagon ID:" + hexagonCount, hexagon);
+                        Hexagon hexagon = new Hexagon(new Point(x, y), size);
+                        shapes.put("Hexagon ID:" + hexagonCount, hexagon);
                         break;
 
                     default:
-                        throw new IllegalArgumentException("Invalid shapeType " + shapeType);
+                        printLine();
+                        System.out.println("Warning: Unknown shape type " + type + " skipping");
                 }
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
+        } catch (IOException e) {
+            printLine();
+            System.out.println("Error while filling file: " + e.getMessage());
         }
 
-        System.out.println("Shapes list size: " + numberOfShapes);
 
-        printLineFunction();
-        shapesList.forEach((k, v) -> {System.out.println(k + " -> " + v);});
+        return shapes;
+    }
 
-        printLineFunction();
-        for (Map.Entry<String, Shape> entry : shapesList.entrySet()) {
+    static void main() {
+        double x = -11;
+        double y = -11;
+        int numberOfShapes = 0;
+
+        Map<String, Shape> shapes;
+
+        try (Scanner input = new Scanner(System.in)) {
+            x = getValidatedCoordinate(input, "X");
+            y = getValidatedCoordinate(input, "Y");
+            numberOfShapes = getValidatedNumberOfShapes(input);
+        } catch (Exception e) {
+            printLine();
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+
+        Point point  = new Point(x,y);
+        createFile();
+        fillFileWithShapes(numberOfShapes);
+
+        shapes = loadShapesFromFile();
+        printLine();
+        shapes.forEach((key, shape) ->
+                System.out.println(key + " -> center: (" + shape.getCenter().getX() + ", " + shape.getCenter().getY() + "), size: " + shape.getSize()));
+
+        printLine();
+        int containsCount = 0;
+        for (Map.Entry<String, Shape> entry : shapes.entrySet()) {
             if (entry.getValue().contains(point)) {
                 containsCount++;
-                String result = getResult(entry, point);
-
-                System.out.println(result);
+                System.out.println(getResult(entry, point));
             }
         }
 
-        if(containsCount == 0)
-            System.out.println("No such shapes that contains this point");
-        else {
+        if (containsCount == 0) {
+            System.out.println("No shapes contain this point.");
+        } else {
+            printLine();
             System.out.println("Total shapes containing the point: " + containsCount);
         }
 
-        printLineFunction();
+        printLine();
     }
-
 }

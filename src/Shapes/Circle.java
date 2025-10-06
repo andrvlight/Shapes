@@ -6,8 +6,8 @@ public class Circle extends Shape {
     private double radius;
 
     public Circle(Point center, double radius) throws IllegalArgumentException {
-        if (radius <= 0) throw new IllegalArgumentException("radius must be > 0");
         super(center);
+        if (radius <= 0) throw new IllegalArgumentException("radius must be > 0");
         this.radius = radius;
     }
 

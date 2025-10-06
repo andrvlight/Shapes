@@ -6,8 +6,8 @@ public class Triangle extends Shape {
     private double sideLength;
 
     public Triangle(Point center, double sideLength) throws IllegalArgumentException {
-        if (sideLength <= 0) throw new IllegalArgumentException("sideLength must be > 0");
         super(center);
+        if (sideLength <= 0) throw new IllegalArgumentException("sideLength must be > 0");
         this.sideLength = sideLength;
     }
 
