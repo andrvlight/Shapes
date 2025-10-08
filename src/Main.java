@@ -13,10 +13,10 @@ public class Main {
         while (true) {
             try {
                 printLine();
-                System.out.print("Enter coordinate " + coordinate + " between -10 and 10: ");
+                System.out.print("Enter coordinate " + coordinate + " between -5 and 5: ");
                 double value = input.nextDouble();
 
-                if (value < 0 || value > 10) {
+                if (value < -5 || value > 5) {
                     printLine();
                     System.out.println("Coordinates should be between -10 and 10, try again");
                     continue;
@@ -83,7 +83,7 @@ public class Main {
                 String shapeType = shapes.get((int) (Math.random() * shapes.size()));
                 double x = (int) (Math.random() * 22 - 11);
                 double y = (int) (Math.random() * 22 - 11);
-                int size = (int) (Math.random() * 5 + 1);
+                int size = (int) (Math.random() * 10 + 1);
 
                 fw.write(shapeType + " " + x + " " + y + " " + size + "\n");
             }
@@ -102,7 +102,7 @@ public class Main {
         Shape shape = entry.getValue();
 
         String result = (entry.getKey() + " with center (" + shape.getCenter().getX() + ", " + shape.getCenter().getY()) + ")";
-        String pointInfo = (" contains the point(" + point.getX() + ", " + point.getY()) + ")";
+        String pointInfo = (" contains the point (" + point.getX() + ", " + point.getY()) + ")";
 
         if (type.equals("Circle")) {
             result += (" and radius: " + shape.getSize());
